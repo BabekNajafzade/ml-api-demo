@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple ML API UI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 200px;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple ML Model Prediction</h1>
+
+    <label>Age:</label><br>
+    <input type="number" id="age" placeholder="Enter age"><br>
+
+    <label>Salary:</label><br>
+    <input type="number" id="salary" placeholder="Enter salary"><br>
+
+    <button onclick="predict()">Predict</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function predict() {
+            const age = document.getElementById("age").value;
+            const salary = document.getElementById("salary").value;
+
+            const data = { age: parseInt(age), salary: parseFloat(salary) };
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById("result").innerText =
+                        `Prediction: ${result.label} (probability: ${result.probability})`;
+                } else {
+                    document.getElementById("result").innerText =
+                        `Error: ${result.detail}`;
+                }
+            } catch (err) {
+                document.getElementById("result").innerText =
+                    `Error: ${err.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
